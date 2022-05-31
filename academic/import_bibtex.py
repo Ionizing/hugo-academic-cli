@@ -106,7 +106,7 @@ def parse_bibtex_entry(
         log.error(f'Invalid date for entry `{entry["ID"]}`.')
 
     page.fm["date"] = "-".join([year, month, day])
-    page.fm["publishDate"] = timestamp
+    # page.fm["publishDate"] = timestamp
 
     authors = None
     if "author" in entry:
@@ -156,6 +156,11 @@ def parse_bibtex_entry(
             page.fm["url_pdf"] = sane_url
         else:
             links += [{"name": "URL", "url": sane_url}]
+
+    if "author+an" in entry:
+        page.fm["corresponding_authors"] = gen_corresponding_author_indices(entry["author+an"])
+        page.fm["first_authors"] = gen_first_author_indices(entry["author+an"])
+        pass
 
     if links:
         page.fm["links"] = links
@@ -215,6 +220,44 @@ def clean_bibtex_authors(author_str):
         authors.append(" ".join(first_names) + " " + last_name)
 
     return authors
+
+
+def gen_corresponding_author_indices(in_str):
+    """Output the author indices accroding to `author+an` field in each entry
+       example input: "1=first; 4=corresponding; 5=highlight",
+       example output: [4],
+    """
+    # print("in_str = {}".format(in_str))
+    ret = []
+
+    for item in in_str.split():
+        item = item.strip()
+        if item:
+            index, annotation = item.split('=')
+            index = int(index)
+            if 'corresponding' in annotation.lower():
+                ret.append(index)
+    
+    return ret
+
+
+def gen_first_author_indices(in_str):
+    """Output the author indices accroding to `author+an` field in each entry
+       example input: "1=first; 4=corresponding; 5=highlight",
+       example output: [1],
+    """
+    # print("in_str = {}".format(in_str))
+    ret = []
+
+    for item in in_str.split():
+        item = item.strip()
+        if item:
+            index, annotation = item.split('=')
+            index = int(index)
+            if 'first' in annotation.lower():
+                ret.append(index)
+    
+    return ret
 
 
 def clean_bibtex_str(s):
