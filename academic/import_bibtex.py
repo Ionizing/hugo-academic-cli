@@ -230,7 +230,7 @@ def gen_corresponding_author_indices(in_str):
     # print("in_str = {}".format(in_str))
     ret = []
 
-    for item in in_str.split():
+    for item in in_str.split(';'):
         item = item.strip()
         if item:
             index, annotation = item.split('=')
@@ -249,7 +249,7 @@ def gen_first_author_indices(in_str):
     # print("in_str = {}".format(in_str))
     ret = []
 
-    for item in in_str.split():
+    for item in in_str.split(';'):
         item = item.strip()
         if item:
             index, annotation = item.split('=')
